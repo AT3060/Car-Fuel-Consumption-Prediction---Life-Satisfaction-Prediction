@@ -1,56 +1,86 @@
-# Does Money Make People Happy? Predicting Life Satisfaction from GDP
+# Does Money Make People Happy? — Life Satisfaction Prediction
 
-**Project 2 of 2** in this repository: a guided, beginner-friendly walkthrough of the introductory example in
-*Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow* (3rd edition, Aurélien Géron) — Chapter 1: *The Machine Learning Landscape*.
+**Project 2 of 2** in this repository · Python · Scikit-Learn · Regression
 
-## Goal
-
-Can we predict how satisfied people in a country are with their lives, using only the country's GDP per capita?
-I train two regression models and use them to predict the life satisfaction of **Cyprus**, a country that is not in the training data.
+A guided, beginner-friendly walkthrough of the introductory example in Chapter 1 (*The Machine Learning Landscape*) of *Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow* (3rd ed., Aurélien Géron), extended with my own explanations and analyses.
 
 ![Linear regression](images/02_linear_regression.png)
 
-## Data
+---
 
-| Source | Feature | Year |
-|---|---|---|
-| OECD Better Life Index | Life satisfaction (0–10) | 2020 |
-| World Bank (via Our World in Data) | GDP per capita (USD) | 2020 |
+## 🎯 Goal
 
-Prepared CSV files from [ageron/data](https://github.com/ageron/data/tree/main/lifesat). The notebook downloads them automatically.
+> **Can we predict how satisfied people in a country are with their lives, knowing only how rich the country is (GDP per capita)?**
 
-## Results
+The concrete task: predict the life satisfaction of **Cyprus**, a country that is not in the training data.
+
+The main purpose of this project is **learning**: understanding, step by step, the basic workflow of Machine Learning and the most important pitfalls, before applying them to my own data in [Project 1](../car-fuel-consumption-prediction/).
+
+## 📊 Data
+
+| | |
+|---|---|
+| **Target** | Life satisfaction (score 0–10) — OECD Better Life Index, 2020 |
+| **Feature** | GDP per capita (USD) — World Bank via Our World in Data, 2020 |
+| **Main dataset** | 27 countries with GDP between 23,500 and 62,500 USD |
+| **Full dataset** | 36 countries, incl. 9 poorer and richer countries (used in the experiments) |
+
+The prepared CSV files come from [ageron/data](https://github.com/ageron/data/tree/main/lifesat); the notebook downloads them automatically.
+
+## 🛠️ Approach
+
+1. **Exploration:** statistics and a scatter plot of GDP vs. life satisfaction
+2. **Two models**, trained on 27 countries:
+   - **Linear Regression** — *model-based*: learns a straight line
+   - **k-Nearest Neighbors (k = 3)** — *instance-based*: averages the 3 countries with the most similar GDP
+3. **Prediction for Cyprus** (GDP 37,655 USD) with both models
+4. **Three experiments** using the full dataset
+
+## ✅ Results — what was achieved
 
 | Model | Training data | Prediction for Cyprus |
 |---|---|---|
-| Linear Regression | 27 countries | 6.30 |
-| k-Nearest Neighbors (k = 3) | 27 countries | 6.33 |
+| Linear Regression | 27 countries | **6.30** |
+| k-Nearest Neighbors (k = 3) | 27 countries | **6.33** |
 | Linear Regression | all 36 countries | 6.46 |
 | Ridge (regularized) | 27 countries | 6.45 |
 
-## Key lessons
+- Both models agree: Cyprus' life satisfaction is about **6.3 out of 10**.
+- The linear model found a clear positive relation: **+10,000 USD of GDP per capita ≈ +0.68 points** of life satisfaction (within the 27 countries).
+- k-NN based its prediction on **Israel, Lithuania and Slovenia**, the 3 countries with the closest GDP — the notebook shows them explicitly, which makes the algorithm easy to understand.
 
-**1. Training data must be representative.** A line fitted only on mid-income countries does not hold for poorer or very rich countries.
+## 🔬 Three experiments
+
+### 1. Non-representative training data
+When the 9 missing poorer and richer countries are added, the trend changes a lot: the slope of the line drops from **6.8 × 10⁻⁵ to 2.3 × 10⁻⁵** — about **3× flatter**. Countries like Colombia and Mexico are happier, and Luxembourg and Ireland less happy, than the first model predicts.
+
+➡️ A model trained on a narrow selection of data can draw wrong conclusions about the rest.
 
 ![Representative data](images/03_representative_data.png)
 
-**2. Overfitting.** A degree-10 polynomial fits the training points closely but makes unrealistic predictions in between.
+### 2. Overfitting
+A polynomial of degree 10 passes close to every training country but swings wildly between them — it learns the noise instead of the trend.
 
 ![Overfitting](images/04_overfitting.png)
 
-**3. Regularization.** Ridge regression keeps the model simpler, so its line moves closer to the one trained on all countries.
+### 3. Regularization
+A **Ridge** model trained only on the 27 countries produces a flatter line that is much closer to the line trained on *all* 36 countries — it generalizes better without ever seeing the missing data.
 
 ![Regularization](images/05_regularization.png)
 
-## Folder contents
+## 💡 Key findings
 
-```
-life-satisfaction-prediction/
-├── life_satisfaction_prediction.ipynb   # the full walkthrough, step by step
-└── images/                              # plots generated by the notebook
-```
+- Richer countries tend to be happier, but **only up to a point** — the relationship is not a straight line forever.
+- Two very different algorithms (model-based and instance-based) gave almost the same answer, which increases confidence in the prediction.
+- The choice of training data can change the conclusion completely; regularization makes a model more robust.
 
-## How to run
+## ⚠️ Limitations
+
+- Very small dataset (27–36 countries), one year only.
+- No test set: with so few countries, the results are illustrations of concepts, not a validated model. [Project 1](../car-fuel-consumption-prediction/) adds a proper train/test evaluation.
+- Correlation is not causation — GDP alone does not *cause* life satisfaction.
+
+## ▶️ How to run
 
 ```bash
 git clone https://github.com/AT3060/car-fuel-consumption-prediction---life-satisfaction-prediction.git
@@ -60,9 +90,13 @@ cd life-satisfaction-prediction
 jupyter notebook life_satisfaction_prediction.ipynb
 ```
 
-## Tools
+## 📁 Folder contents
 
-Python · pandas · NumPy · Matplotlib · Scikit-Learn · Jupyter
+```
+life-satisfaction-prediction/
+├── life_satisfaction_prediction.ipynb   # the full walkthrough, step by step
+└── images/                              # plots generated by the notebook
+```
 
 ## Credits
 
